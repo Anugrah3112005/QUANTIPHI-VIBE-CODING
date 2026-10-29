@@ -20,8 +20,9 @@ def startup_event():
     init_db()
 
 @app.get("/api/profile/{username}")
-async def get_profile(username: str, refresh: bool = Query(False)):
-    data = await fetch_and_cache_github_data(username, force_refresh=refresh)
+async def get_profile(username: str, refresh: str = "false"):
+    force = refresh.lower() in ("true", "1", "yes")
+    data = await fetch_and_cache_github_data(username, force_refresh=force)
     if not data:
         raise HTTPException(status_code=404, detail="GitHub user not found or rate limited")
     return data
